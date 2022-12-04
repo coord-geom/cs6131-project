@@ -1,1 +1,3 @@
-# cs6131-project
+CS6131 Database Design Project
+
+Something about databases
