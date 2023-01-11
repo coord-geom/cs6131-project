@@ -1,3 +1,24 @@
-CS6131 Database Design Project
+# VoyageVault - Never Gonna Desert You
 
-Something about databases
+
+### Entities
+
+#### Travel Agency
+
+
+#### Tour Package
+
+
+#### Tour Group
+
+
+#### Flight
+
+
+#### Hotel
+
+
+#### Customer
+
+
+#### Review
