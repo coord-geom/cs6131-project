@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+
+    <script src="https://kit.fontawesome.com/21ff7da9d7.js" crossorigin="anonymous"></script>
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="index.html">
@@ -14,11 +18,11 @@
       
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="index.html">Home<span class="sr-only">(current)</span></a>
-            </li>
             <li class="nav-item">
-              <a class="nav-link" href="login.html">Login</a>
+              <a class="nav-link" href="index.html">Home</span></a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="login.html">Login<span class="sr-only">(current)</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="search.html">Search</a>
@@ -33,10 +37,37 @@
     <head>
         <h1></h1>
         <title>
-            Register
+            VoyageVault | Register
         </title>
     </head>
-    <body>
-        Register
+    <body class="login-page">
+      <div class="center"><p class="logo">VoyageVault</p></div>
+      <div class="layer">
+        <div class="content">
+          <div class="content-bottom">
+              <form action="#" method="post">
+                  <div class="field-group">
+                    <span class="fa fa-user" aria-hidden="true"></span>
+                    <div class="text-field">
+                      <input name="username" id="username" type="text" value placeholder="Username">
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <span class="fa fa-lock" aria-hidden="true"></span>
+                    <div class="text-field">
+                      <input name="password" id="password" type="text" value placeholder="Password">
+                    </div>
+                  </div>
+                  <div class="text-field">
+                    <button type="submit" class="btn">Create Account</button>
+                  </div>
+                  <ul class="list-login-bottom">
+                    <li class><a href="login.html" class>Login</a></li>
+                    <li class><a href="contact.html" class>Need help?</a></li>
+                  </ul>
+              </form>
+          </div>
+        </div>
+      </div>
     </body>
 </html>
