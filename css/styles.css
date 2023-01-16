@@ -16,7 +16,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 }
 
 body {
-    background-color: whitesmoke;
     font-family: Mukta;
 }
 
@@ -29,6 +28,18 @@ body {
     background: fixed no-repeat center url('../assets/halong_bg.jpg');
     background-size: cover; 
     display: block;
+}
+
+.search-page {
+    display: block;
+    background: fixed no-repeat center url('../assets/halong_bg.jpg');
+    background-size: cover; 
+}
+
+.contact-page {
+    display: block;
+    background: fixed no-repeat center url('../assets/halong_bg.jpg');
+    background-size: cover; 
 }
 
 .layer {
@@ -44,6 +55,80 @@ body {
     .content {
         margin: 4em autp;
     }
+}
+
+.content-wide {
+    max-width: 1200px;
+    margin: 6em auto;
+    justify-content: center;
+}
+
+
+@media screen and (max-width: 1280px) {
+    .content-wide {
+        margin: 4em autp;
+    }
+}
+
+.package-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 80em;
+}
+
+.package-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.package {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    box-sizing: border-box;
+    max-width: 20rem;
+    border-radius: 12px;
+    background-color:#eee;
+}
+
+.package-image {
+    margin: 1em 1em 0em 1em;
+}
+
+.package-image img {
+    max-width: 18rem;
+    height: auto;
+    border-radius: 10px;
+}
+
+.package-text {
+    margin-right: -1px;
+    padding: 0.5em 1em 0em 1em;
+    border-radius: 10px;
+    text-align: justify;
+    color: black;
+}
+
+.package-title {
+    font-weight: bold;
+    font-size: larger;
+}
+
+.package-info {
+    padding: 0.5rem 1rem;
+    display: grid;
+    place-items: center;
+    grid-template-columns: 1fr 2fr;
+    color: black;
+}
+
+.package-tags {
+    text-align: right;
 }
 
 .content-bottom {
@@ -92,8 +177,8 @@ form .field-group .text-field {
     outline: none;
 }
 
-.field-group textarea {
-    padding: 13px 0 10px 15px;
+.field-group-long textarea {
+    padding: 13px 0 10px 0px;
     font-size: 17px;
     font-weight: 300;
     color: #ddd;
@@ -165,7 +250,6 @@ form .field-group-long .text-field {
     width: 100%
 }
 
-.content
 
 .btn:hover {
     box-shadow: rgba(80, 63, 205, 0.5) 0 1px 30px;
@@ -211,6 +295,12 @@ ul.list-login-bottom li:nth-child(2){
     transform: translateY(40%);
 }
 
+.heading-center {
+    text-align: center;
+    color: white;
+    font-family: Mukta;
+    transform: translateY(90%);
+}
 
 /* CSS */
 .button-36 {
