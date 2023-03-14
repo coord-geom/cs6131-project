@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <head>
+        <h1></h1>
+        <title>
+            VoyageVault | Search
+        </title>
+    </head>
+    <body class="search-page">
+        <div class="content">
+          <form action="#" method="post">
+              <div class="field-group-long">
+                <span class="fa fa-magnifying-glass" aria-hidden="true"></span>
+                <div class="text-field">
+                  <input name="query" id="query" type="text" value placeholder="Ha Long Bay, Vietnam">
+                </div>
+              </div>
+          </form>
+        </div>
+        <div class="content-wide">
+          <section class="package-view">
+            <div class="package-list">
+              {% for i in range(20) %}
+              <main class="package">
+                <a href="#" style="text-decoration: none;">
+                  <div class="package-image">
+                    <img src="{{ url_for('static', filename='assets/arch-of-triumph-dprk.jpg') }}">
+                  </div>
+                  <div class="package-text">
+                    <div class="package-title">7D6N Best of North Korea</div>
+                    <div class="package-desc">Immerse yourself in the beautiful culture of the Kims</div>
+                  </div>
+                  <div class="package-info">
+                    <div class="package-agency">Chan Sisters</div>
+                    <div class="package-tags"><span class="fa fa-tag"></span> exotic, long, spiritual</div>
+                  </div>
+                </a>
+              </main>
+              {% endfor %}
+            </div>
+          </section>
+        </div>
+    </div>
+  </body>
+
+{% endblock %}

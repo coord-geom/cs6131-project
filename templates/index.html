@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <head>
+        <h1></h1>
+        <title>
+            VoyageVault | Welcome
+        </title>
+    </head>
+    <body class="index-page">
+      <div class="center">
+        <p class="logo">VoyageVault</p><br>
+        <p class="content-text">The perfect vacation is only a few clicks away</p>
+        <div class="layer">
+          <div>
+            <form>
+              <button class="button-36" formaction="{{ url_for('search') }}">Find your getaway</button>
+              <button class="button-36" formaction="{{ url_for('search') }}">Take me somewhere</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </body>
+</html>
+{% endblock %}

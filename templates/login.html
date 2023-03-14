@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <head>
+        <h1></h1>
+        <title>
+            VoyageVault | Login
+        </title>
+    </head>
+    <body class="login-page">
+      <div class="center"><p class="logo">VoyageVault</p></div>
+      <div class="layer">
+        <div class="content">
+          <div class="content-bottom">
+              <form action="" method="post">
+                  <div class="field-group">
+                    <span class="fa fa-user" aria-hidden="true"></span>
+                    <div class="text-field">
+                      <input name="username" id="username" type="text" value placeholder="Username">
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <span class="fa fa-lock" aria-hidden="true"></span>
+                    <div class="text-field">
+                      <input name="password" id="password" type="password" value placeholder="Password">
+                    </div>
+                  </div>
+                  <div class="text-field">
+                    <button type="submit" class="btn">Login</button>
+                  </div>
+                  <ul class="list-login-bottom">
+                    <li class><a href="{{ url_for('register') }}" class>Register</a></li>
+                    <li class><a href="{{ url_for('contact') }}" class>Forgot Password?</a></li>
+                  </ul>
+              </form>
+          </div>
+        </div>
+      </div>
+    </body>
+
+{% endblock %}
