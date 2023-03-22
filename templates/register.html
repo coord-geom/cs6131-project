@@ -12,11 +12,47 @@
       <div class="layer">
         <div class="content">
           <div class="content-bottom">
+              {% with errors = get_flashed_messages(category_filter=["error"]) %}
+              {% if errors %}
+                {% for message in errors %}
+                  <div class="alert alert-danger" role="alert">                
+                    {{ message }}
+                  </div>    
+                {% endfor %}
+              {% endif %}
+              {% endwith %}
+              {% with successes = get_flashed_messages(category_filter=["success"]) %}
+                {% if successes %}
+                  {% for message in successes %}
+                    <div class="alert alert-success" role="alert">                
+                      {{ message }}
+                    </div>    
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}           
               <form action="" method="post">
                   <div class="field-group">
                     <span class="fa fa-user" aria-hidden="true"></span>
                     <div class="text-field">
-                      <input name="username" id="username" type="text" value placeholder="Username">
+                      <input name="fname" id="fname" type="text" value placeholder="First Name">
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <span class="fa fa-user" aria-hidden="true"></span>
+                    <div class="text-field">
+                      <input name="lname" id="lname" type="text" value placeholder="Last Name">
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <span class="fa fa-envelope" aria-hidden="true"></span>
+                    <div class="text-field">
+                      <input name="email" id="email" type="text" value placeholder="Email">
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <span class="fa fa-phone" aria-hidden="true"></span>
+                    <div class="text-field">
+                      <input name="hpnum" id="hpnum" type="number" value placeholder="Contact No.">
                     </div>
                   </div>
                   <div class="field-group">

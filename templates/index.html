@@ -10,7 +10,13 @@
     <body class="index-page">
       <div class="center">
         <p class="logo">VoyageVault</p><br>
-        <p class="content-text">The perfect vacation is only a few clicks away</p>
+        <p class="content-text">
+          {% if session['fname'] %}
+            Hi <strong>{{ session['fname'] }}</strong>, the perfect vacation is only a few clicks away
+          {% else %}
+            The perfect vacation is only a few clicks away
+          {% endif %}
+        </p>
         <div class="layer">
           <div>
             <form>
@@ -21,5 +27,5 @@
         </div>
       </div>
     </body>
-</html>
+
 {% endblock %}

@@ -11,20 +11,31 @@
       <div class="collapse navbar-collapse" style="display: flex!important; flex-basis: auto;" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('search') }}">Search</a>
+              <a class="nav-link {{ 'active' if request.path == url_for('search') }}" href="{{ url_for('search') }}">Search</a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
+              <a class="nav-link {{ 'active' if request.path == url_for('contact') }}" href="{{ url_for('contact') }}">Contact</a>
           </li>
         </ul>
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('register') }}">Register</a>
-          </li>
-        </ul>
+        {% if not session['fname'] %}
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link {{ 'active' if request.path == url_for('login') }}" href="{{ url_for('login') }}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ 'active' if request.path == url_for('register') }}" href="{{ url_for('register') }}">Register</a>
+            </li>
+          </ul>
+        {% else %}
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link {{ 'active' if request.path == url_for('profile') }}" href="{{ url_for('profile') }}">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+          </ul>
+        {% endif %}
       </div>
     </nav>    
 

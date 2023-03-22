@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<head>
+    <h1></h1>
+    <title>
+        VoyageVault | Profile
+    </title>
+</head>
+<body class="contact-page">
+    <div class="layer">
+        <h1 class="heading-center">My Profile</h1>
+        <div class="content">
+            <table class="table table-striped" style="color:white">
+                <tr>
+                    <td>Name:</td>
+                    <td>{{ session['fname'] }} {{ session['lname'] }}</td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td>{{ session['email'] }}</td>
+                </tr>
+                <tr>
+                    <td>Contact Number:</td>
+                    <td>{{ session['hpnum'] }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+{% endblock %}
