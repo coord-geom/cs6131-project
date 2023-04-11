@@ -7,10 +7,10 @@
         VoyageVault | Profile
     </title>
 </head>
-<body class="contact-page">
+<body class="page">
     <div class="layer">
         <h1 class="heading-center">My Profile</h1>
-        <div class="content">
+        <div class="content" style="color:white">
             <table class="table table-striped" style="color:white">
                 <tr>
                     <td>Name:</td>
@@ -25,6 +25,24 @@
                     <td>{{ session['hpnum'] }}</td>
                 </tr>
             </table>
+        </div>
+        <h2 class="heading-center">Update my profile:</h2>
+        <div class="content" style="color:white">
+            <form action="{{ url_for('profile') }}" method="post" class="was-validated">
+                <div class="field-group">
+                    <input type="text" class="text-field" name="email" placeholder="Email" id="email" value="{{ session['email'] }}" required>
+                </div>
+                <div class="field-group">
+                    <input type="text" class="text-field" name="hpnum" placeholder="Enter new contact number to update" id="hpnum" required>
+                </div>
+                <div class="field-group">
+                    <input type="password" class="text-field" name="password" placeholder="Enter new password to update" id="password" required>
+                </div>
+                <div class="text-field">
+                    <button type="submit" class="btn">Update</button>
+                  </div>
+                </div>
+          </form>
         </div>
     </div>
 </body>

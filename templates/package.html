@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <head>
+        <h1></h1>
+        <title>
+            VoyageVault | {{ package.pname }}
+        </title>
+
+        <script src="{{ url_for('static',filename='scripts/package.js')}}"></script>
+    </head>
+    <body class="page">
+        <div class="package-box">
+            <img src="{{ package.imagelink }}" class="package-page-img">
+            <h1 class="package-heading">{{ package.pname }}</h1>
+            <div class="content-package" >
+                <h4 class="content-text" style="text-align: center ;">{{ package.description }}</h4>
+                <br>
+                <div style="text-align: center;" class="content-text">
+                    {% if package.prating %}
+                        <!--{{ '%0.1f' | format(package.prating) }} stars-->
+                        {% for i in range(package.prating|int) %} <i class="fa-solid fa-star fa-lg"></i> {% endfor %}
+                        {% for i in range(5-package.prating|int) %} <i class="fa-regular fa-star fa-lg"></i> {% endfor %}
+                        <br><p style="font-size: larger;">{{ '%0.1f' | format(package.prating) }} stars by {{ reviews|length }} reviewers</p>
+                    {% else %}
+                        No ratings
+                    {% endif %}
+                </div>
+                <br>
+                {% if not package.itinerary %}
+                    <p class="content-text">This is a free-and-easy package.</p>
+                {% else %}
+                    <h2 class="content-text"><u>Itinerary</u></h2>
+                    <p class="content-text" style="white-space: pre-line;">{{ package.itinerary }}</p>
+                {% endif %}
+                <br>
+                <h3 class="content-text">Adult price: ${{ package.aprice }} <br> Child price: ${{ package.cprice }}</h3>
+                <h4 class="content-text">Offered by {{ package.aname }}</h4>
+                <br>
+            </div>
+            <button class="button-36" href="{{ package.link }}" style="width: 30%; margin: auto; display: block; text-transform: uppercase;">Sign up now!</button>
+            <div class="content-package">
+                <h2 class="content-text">Reviews</h2>
+                <p class="content-text">Purchased this package before? Leave a review to help others know more about it!</p>
+                {% with errors = get_flashed_messages(category_filter=["error"]) %}
+                {% if errors %}
+                    {% for message in errors %}
+                    <div class="alert alert-danger" role="alert">                
+                        {{ message }}
+                    </div>    
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+                {% with successes = get_flashed_messages(category_filter=["success"]) %}
+                    {% if successes %}
+                    {% for message in successes %}
+                        <div class="alert alert-success" role="alert">                
+                        {{ message }}
+                        </div>    
+                    {% endfor %}
+                    {% endif %}
+                {% endwith %}   
+                <form method="post">
+                    <p class="content-text">Your rating:&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;<input id='rating' name='rating' type="range" min="1" max="5" step="1" value="5">&nbsp;&nbsp;5</p> 
+                    <textarea class="package-review-ta" name="details" id="details" type="text" value placeholder="Details" onkeypress="textAreaAdjust(this)" onkeyup="textAreaAdjust(this)" required></textarea>
+                    <button type="submit" class="button-submit" style="border-radius: 5px;">Submit</button>
+                </form>
+                <br>
+                {% for review in reviews %}
+                    <div class="review-block">
+                        {% if review.cID == session['cID'] %}
+                            <p class="content-text">
+                                <u><b style="font-size: large;">{{ review.cname }}</b></u>&nbsp;
+                                {% for i in range(review.rating|int) %} <i class="fa-solid fa-star"></i> {% endfor %}
+                                {% for i in range(5-review.rating|int) %} <i class="fa-regular fa-star"></i> {% endfor %}
+                                <br>
+                                <p class="content-text" id="details_mine">{{ review.content }}</p>
+                            </p>
+                            <form method="post" hidden="true" id="updateForm">
+                                <p class="content-text">Your rating:&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;<input id='rating' name='rating' type="range" min="1" max="5" step="1" value="{{ review.rating }}">&nbsp;&nbsp;5</p> 
+                                <textarea class="package-review-ta" name="update-review" id="update-review" type="text" onkeypress="textAreaAdjust(this)" onkeyup="textAreaAdjust(this)" required>{{ review.content }}</textarea>
+                                <button type="submit" class="button-submit" style="border-radius: 5px;" onclick="return confirm('Are you sure you want to edit your review?')">Confirm Changes</button>
+                            </form>
+                            <button id="editButton" class="button-submit" style="float: left;" onclick="edit(this)">Edit</button> 
+                            <button id="cancelChanges" class="button-delete" onclick="cancelChanges(this)" hidden="true">Cancel Changes</button>
+                            <form method="post" onclick="return confirm('Are you sure you want to delete your review?')">
+                                <input id="delete-review" name="delete-review" hidden="true">
+                                <button type="submit" class="button-delete">Delete</button>
+                            </form>
+                        {% else %}
+                            <p class="content-text">
+                                <u><b style="font-size: large;">{{ review.cname }}</b></u>&nbsp;
+                                {% for i in range(review.rating|int) %} <i class="fa-solid fa-star"></i> {% endfor %}
+                                {% for i in range(5-review.rating|int) %} <i class="fa-regular fa-star"></i> {% endfor %}
+                                <br>
+                                {{ review.content }}
+                            </p>
+                        {% endif %}
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+
+{% endblock %}

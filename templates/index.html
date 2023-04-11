@@ -17,11 +17,11 @@
             The perfect vacation is only a few clicks away
           {% endif %}
         </p>
-        <div class="layer">
+        <div class="layer" style="margin-top: 2em;">
           <div>
             <form>
               <button class="button-36" formaction="{{ url_for('search') }}">Find your getaway</button>
-              <button class="button-36" formaction="{{ url_for('search') }}">Take me somewhere</button>
+              <button class="button-36" formaction="{{ url_for('view_package',pid=0) }}">Take me somewhere</button>
             </form>
           </div>
         </div>
