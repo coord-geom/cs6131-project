@@ -1,0 +1,95 @@
+{% extends "blayout.html" %}
+
+{% block content %}
+    <head>
+        <script src="{{ url_for('static', filename='scripts/search.js') }}"></script>
+        <h1></h1>
+        <title>
+            VoyageVault | Search
+        </title>
+    </head>
+    <body class="page">
+        <div class="search-bar-content">
+          <p class="content-text" style="text-align: center; margin-bottom: 1em;">Try finding your package from the user's view!</p>
+          <form method="post">
+              <div class="search-filter">
+                  <select class="dropdown" name="category">
+                    {% for i in range(fields|length) %}
+                    {% if i == 0 %}
+                      <option value="{{ fields[0] }}" {% if request.form['category'] == fields[0] %}selected{% endif %}>Search by {{ fields[0] }}</option>
+                    {% else %}
+                      <option value="{{ fields[i] }}" {% if request.form['category'] == fields[i] %}selected{% endif %}>Search by {{ fields[i] }}</option>
+                    {% endif %}
+                  {% endfor %}
+                  </select>
+                <div class="field-group-long">
+                  <span class="fa fa-magnifying-glass" aria-hidden="true"></span>
+                  <div class="text-field">
+                    <input name="query" id="query" type="text" value="{{ search }}" placeholder="Amsterdam">
+                  </div>
+                </div>
+              </div>
+              <div><p onclick="showFilters(this)" id="showfilters" style="color: aliceblue; margin-left: 10px; width: max-content; cursor:pointer;">Show more</p></div>
+              <div class="search-filter" id="filters">
+                <div class="search-option">
+                  <p style="color:aliceblue">Depart after</p>
+                  <input type="date" name="depdate" id="depdate" value="{{ request.form['depdate'] }}" onload="setDepDate()">
+                </div>
+                <div class="search-option">
+                  <p style="color:aliceblue" id="rating-text"></p>
+                  <input type="range" name="rating" id="rating" min="1" max="5" step="0.1" value="{% if request.form['rating'] %}{{ request.form['rating'] }}{% else %}1{% endif %}" oninput="changeRating(this)" id="rating">
+                </div>
+                <div class="search-option">
+                  <p style="color:aliceblue" id="cap-text"></p>
+                  <input type="range" id="cap" name="cap" min="1" max="30" step="1" value="{% if request.form['cap'] %}{{ request.form['cap']}}{% else %}1{% endif %}" oninput="changeCapacity(this)">
+                </div>
+                <div class="search-option">
+                  <p style="color:aliceblue" id="cost-text">Maximum Cost</p>
+                  <input type="range" id="cost" name="cost" min="{{ mincost }}" max="{{ maxcost }}" step="1" value="{% if request.form['cost'] %}{{ request.form['cost']}}{% else %}{{ maxcost }}{% endif %}" oninput="changeCost(this)">
+                </div>
+              </div>
+          </form>
+        </div>
+        <div class="content-wide" id="search">
+          <section class="package-view">
+            <div class="package-list">
+              {% for package in packages %}
+              <main class="package">
+                <a href="{{ url_for('bview_package', pid=package.pID)}}" style="text-decoration: none;">
+                  <div class="package-image">
+                    <img src="{{ package.imagelink }}">
+                  </div>
+                  <div class="package-text">
+                    <div class="package-title">{{ package.pname }}</div>
+                    <div class="package-desc">{{ package.description }}</div>
+                  </div>
+                  <div class="package-info">
+                      <div class="package-agency">
+                        {% if package.prating %}
+                          <!--{{ '%0.1f' | format(package.prating) }} stars-->
+                          {% for i in range(package.prating|int) %} <i class="fa-solid fa-star"></i> {% endfor %}
+                          {% for i in range(5-package.prating|int) %} <i class="fa-regular fa-star"></i> {% endfor %}
+                        {% else %}
+                          No ratings
+                        {% endif %}
+                      </div>
+                  </div>
+                  <div class="package-info">
+                      <span class="fa fa-tag" style="cursor:default; "></span> 
+                      {% for tag in ptag %}
+                        {% if tag.pID == package.pID %}
+                          <a href="{{ url_for('bsearch', tagname=tag.tag) }}">{{ tag.tag }}</a>
+                        {% endif %}
+                      {% endfor %}
+                      
+                  </div>
+                </a>
+              </main>
+              {% endfor %}
+            </div>
+          </section>
+        </div>
+    </div>
+  </body>
+
+{% endblock %}

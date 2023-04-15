@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <head>
+        <script src="{{ url_for('static', filename='scripts/review.js') }}"></script>
+        <h1></h1>
+        <title>
+            VoyageVault | My Reviews
+        </title>
+    </head>
+    <body class="page">
+        <div class="layer">
+            <h1 class="heading-center">My Reviews</h1>
+        </div>
+        <div class="package-box">
+        
+            <div class="center">
+                <p class="content-text" style="font-size: large;">You have made {{review|length}} review(s) so far!</p>
+            </div>
+            {% for i in range(review|length) %}
+                <div class="review-block" style="margin: 2em;">
+                    <p class="content-text">
+                        <u><b style="font-size: large;">{{ review[i].cname }} on {{ review[i].pname }}</b></u>&nbsp;
+                        {% for i in range(review[i].rating|int) %} <i class="fa-solid fa-star"></i> {% endfor %}
+                        {% for i in range(5-review[i].rating|int) %} <i class="fa-regular fa-star"></i> {% endfor %}
+                        <br>
+                        <p class="content-text" id="details_mine{{i}}">{{ review[i].content }}</p>
+                    </p>
+                    <form method="post" hidden="true" id="updateForm{{i}}">
+                        <input id="pID" hidden="true" name="pID" value="{{review[i].pID}}">
+                        <input id="ID" hidden="true" name="ID" value="{{i}}">
+                        <p class="content-text">Your rating:&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;<input id='rating{{i}}' name='rating{{i}}' type="range" min="1" max="5" step="1" value="{{ review[i].rating }}">&nbsp;&nbsp;5</p> 
+                        <textarea class="package-review-ta" name="update-review{{i}}" id="update-review{{i}}" type="text" maxlength="1000" onkeypress="textAreaAdjust(this,'{{i}}')" onkeyup="textAreaAdjust(this,'{{i}}')" required>{{ review[i].content }}</textarea>
+                        <button type="submit" class="button-submit" style="border-radius: 5px;" onclick="return confirm('Are you sure you want to edit your review?')">Confirm Changes</button>
+                    </form>
+                    <button id="editButton{{i}}" class="button-submit" style="float: left;" onclick="edit(this,'{{i}}')">Edit</button> 
+                    <button id="cancelChanges{{i}}" class="button-delete" onclick="cancelChanges(this,'{{i}}')" hidden="true">Cancel Changes</button>
+                    <form method="post">
+                        <input id="pID" hidden="true" name="pID" value="{{review[i].pID}}">
+                        <input id="ID" hidden="true" name="ID" value="{{i}}">
+                        <input id="delete-review{{i}}" name="delete-review" hidden="true">
+                        <button type="submit" class="button-delete" onclick="return confirm('Are you sure you want to delete your review?')">Delete</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </body>
+
+{% endblock %}

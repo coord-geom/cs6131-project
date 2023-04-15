@@ -6,33 +6,36 @@
     <script src="https://kit.fontawesome.com/21ff7da9d7.js" crossorigin="anonymous"></script>
     
     <nav class="navbar navbar-expand-lg navbar-dark">
-      <a class="navbar-brand" href="{{ url_for('index') }}" style="font-family: Pacifico;">VoyageVault</a>
+      <a class="navbar-brand" href="{{ url_for('bindex') }}" style="font-family: Pacifico;">VoyageVault</a>
     
       <div class="collapse navbar-collapse" style="display: flex!important; flex-basis: auto;" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-              <a class="nav-link {{ 'active' if request.path == url_for('search') }}" href="{{ url_for('search') }}">Search</a>
+            <a class="nav-link {{ 'active' if request.path == url_for('bsearch') }}" href="{{ url_for('bsearch') }}">Search</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {{ 'active' if request.path == url_for('review') }}" href="{{ url_for('review') }}">My Reviews</a>
+              <a class="nav-link {{ 'active' if request.path == url_for('bmake_package') }}" href="{{ url_for('bmake_package') }}">New Package</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{ 'active' if request.path == url_for('bmanage') }}" href="{{ url_for('bmanage') }}">Manage Packages</a>
         </li>
         </ul>
-        {% if not session['fname'] %}
+        {% if not session['aname'] %}
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link {{ 'active' if request.path == url_for('login') }}" href="{{ url_for('login') }}">Login</a>
+              <a class="nav-link {{ 'active' if request.path == url_for('blogin') }}" href="{{ url_for('blogin') }}">Login</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {{ 'active' if request.path == url_for('register') }}" href="{{ url_for('register') }}">Register</a>
+              <a class="nav-link {{ 'active' if request.path == url_for('bregister') }}" href="{{ url_for('bregister') }}">Register</a>
             </li>
           </ul>
         {% else %}
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link {{ 'active' if request.path == url_for('profile') }}" href="{{ url_for('profile') }}">Profile</a>
+              <a class="nav-link {{ 'active' if request.path == url_for('bprofile') }}" href="{{ url_for('bprofile') }}">Profile</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+              <a class="nav-link" href="{{ url_for('blogout') }}">Logout</a>
             </li>
           </ul>
         {% endif %}

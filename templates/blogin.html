@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "blayout.html" %}
 
 {% block content %}
     <head>
@@ -8,7 +8,11 @@
         </title>
     </head>
     <body class="page">
-      <div class="center"><p class="logo">VoyageVault</p></div>
+      <div class="center">
+        <p class="logo">VoyageVault</p>
+        <br>
+        <p class="content-text" style="font-size: larger; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">FOR BUSINESSES</p>
+    </div>
       <div class="layer">
         <div class="content">
           <div class="content-bottom">
@@ -34,21 +38,21 @@
                   <div class="field-group">
                     <span class="fa fa-envelope" aria-hidden="true"></span>
                     <div class="text-field">
-                      <input name="email" id="email" type="text" value placeholder="Email" maxlength="128" required>
+                      <input name="aemail" id="aemail" type="text" value placeholder="Email" maxlength="128" required>
                     </div>
                   </div>
                   <div class="field-group">
                     <span class="fa fa-lock" aria-hidden="true"></span>
                     <div class="text-field">
-                      <input name="password" id="password" type="password" value placeholder="Password" maxlength="512" required>
+                      <input name="apassword" id="apassword" type="password" value placeholder="Password" maxlength="512" required>
                     </div>
                   </div>
                   <div class="text-field">
                     <button type="submit" class="btn">Login</button>
                   </div>
                   <ul class="list-login-bottom">
-                    <li class><a href="{{ url_for('register') }}" class>Register</a></li>
-                    <li class><a href="{{ url_for('blogin') }}" class>Business Login</a></li>
+                    <li class><a href="{{ url_for('bregister') }}" class>Register business</a></li>
+                    <li class><a href="{{ url_for('login') }}" class>User Login</a></li>
                   </ul>
               </form>
           </div>

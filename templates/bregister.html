@@ -1,14 +1,18 @@
-{% extends "layout.html" %}
+{% extends "blayout.html" %}
 
 {% block content %}
     <head>
         <h1></h1>
         <title>
-            VoyageVault | Register
+            VoyageVault (B) | Register
         </title>
     </head>
     <body class="page">
-      <div class="center"><p class="logo">VoyageVault</p></div>
+      <div class="center">
+        <p class="logo">VoyageVault</p>
+        <br>
+        <p class="content-text" style="font-size: larger; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">FOR BUSINESSES</p>
+    </div>
       <div class="layer">
         <div class="content">
           <div class="content-bottom">
@@ -34,39 +38,33 @@
                   <div class="field-group">
                     <span class="fa fa-user" aria-hidden="true"></span>
                     <div class="text-field">
-                      <input name="fname" id="fname" type="text" value placeholder="First Name" maxlength="64" required>
-                    </div>
-                  </div>
-                  <div class="field-group">
-                    <span class="fa fa-user" aria-hidden="true"></span>
-                    <div class="text-field">
-                      <input name="lname" id="lname" type="text" value placeholder="Last Name" maxlength="64" required>
+                      <input name="aname" id="aname" type="text" value placeholder="Business Name" maxlength="128" required>
                     </div>
                   </div>
                   <div class="field-group">
                     <span class="fa fa-envelope" aria-hidden="true"></span>
                     <div class="text-field">
-                      <input name="email" id="email" type="text" value placeholder="Email" maxlength="128" required>
+                      <input name="aemail" id="aemail" type="text" value placeholder="Business Email" maxlength="128" required>
                     </div>
                   </div>
                   <div class="field-group">
                     <span class="fa fa-phone" aria-hidden="true"></span>
                     <div class="text-field">
-                      <input name="hpnum" id="hpnum" type="number" value placeholder="Contact No." required>
+                      <input name="hotline" id="hotline" type="number" value placeholder="Business Hotline" required>
                     </div>
                   </div>
                   <div class="field-group">
                     <span class="fa fa-lock" aria-hidden="true"></span>
                     <div class="text-field">
-                      <input name="password" id="password" type="password" value placeholder="Password" maxlength="512" required>
+                      <input name="apassword" id="apassword" type="password" value placeholder="Password" maxlength="512" required>
                     </div>
                   </div>
                   <div class="text-field">
-                    <button type="submit" class="btn">Create Account</button>
+                    <button type="submit" class="btn">Create Business Account</button>
                   </div>
                   <ul class="list-login-bottom">
-                    <li class><a href="{{ url_for('login') }}" class>Login</a></li>
-                    <li class><a href="{{ url_for('bregister') }}" class>Register your business</a></li>
+                    <li class><a href="{{ url_for('blogin') }}" class>Business Login</a></li>
+                    <li class><a href="{{ url_for('register') }}" class>User Register</a></li>
                   </ul>
               </form>
           </div>

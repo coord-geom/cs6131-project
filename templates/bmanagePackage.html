@@ -1,0 +1,50 @@
+{% extends "blayout.html" %}
+
+{% block content %}
+<head>
+    <title>Voyage Vault (B) | Manage Packages</title>
+</head>
+
+<body class="page">
+    <h1 class="heading-center" style="margin-bottom: 100px;">Manage Packages</h1>
+    <div class="content-wide" id="search">
+        <section class="package-view">
+          <div class="package-list">
+            {% for package in packages %}
+            <main class="package">
+              <a href="{{ url_for('bview_package', pid=package.pID)}}" style="text-decoration: none;">
+                <div class="package-image">
+                  <img src="{{ package.imagelink }}">
+                </div>
+                <div class="package-text">
+                  <div class="package-title">{{ package.pname }}</div>
+                  <div class="package-desc">{{ package.description }}</div>
+                </div>
+                <div class="package-info">
+                    <div class="package-agency">
+                      {% if package.prating %}
+                        <!--{{ '%0.1f' | format(package.prating) }} stars-->
+                        {% for i in range(package.prating|int) %} <i class="fa-solid fa-star"></i> {% endfor %}
+                        {% for i in range(5-package.prating|int) %} <i class="fa-regular fa-star"></i> {% endfor %}
+                      {% else %}
+                        No ratings
+                      {% endif %}
+                    </div>
+                </div>
+                <div class="package-info">
+                    <span class="fa fa-tag" style="cursor:default; "></span> 
+                    {% for tag in ptag %}
+                      {% if tag.pID == package.pID %}
+                        <a href="{{ url_for('bsearch', tagname=tag.tag) }}">{{ tag.tag }}</a>
+                      {% endif %}
+                    {% endfor %}
+                    
+                </div>
+              </a>
+            </main>
+            {% endfor %}
+          </div>
+        </section>
+      </div>
+</body>
+{% endblock %}

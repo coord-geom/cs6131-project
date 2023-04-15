@@ -1,28 +1,28 @@
-{% extends "layout.html" %}
+{% extends "blayout.html" %}
 
 {% block content %}
 <head>
     <h1></h1>
     <title>
-        VoyageVault | Profile
+        VoyageVault (B) | Business Profile
     </title>
 </head>
 <body class="page">
     <div class="layer">
-        <h1 class="heading-center">My Profile</h1>
+        <h1 class="heading-center">Business Profile</h1>
         <div class="content" style="color:white">
             <table class="table table-striped" style="color:white">
                 <tr>
-                    <td>Name:</td>
-                    <td>{{ session['fname'] }} {{ session['lname'] }}</td>
+                    <td>Business Name:</td>
+                    <td>{{ session['aname'] }}</td>
                 </tr>
                 <tr>
-                    <td>Email:</td>
+                    <td>Business Email:</td>
                     <td>{{ session['email'] }}</td>
                 </tr>
                 <tr>
-                    <td>Contact Number:</td>
-                    <td>{{ session['hpnum'] }}</td>
+                    <td>Hotline:</td>
+                    <td>{{ session['hotline'] }}</td>
                 </tr>
             </table>
         </div>
@@ -51,7 +51,7 @@
                     <input type="text" class="text-field" name="email" placeholder="Email" id="email" value="{{ session['email'] }}" required>
                 </div>
                 <div class="field-group">
-                    <input type="number" class="text-field" name="hpnum" placeholder="Enter new contact number to update" id="hpnum" required>
+                    <input type="text" class="text-field" name="hpnum" placeholder="Enter new hotline to update" id="hpnum" required>
                 </div>
                 <div class="field-group">
                     <input type="password" class="text-field" name="password" placeholder="Enter new password to update" id="password" required>

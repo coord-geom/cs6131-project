@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "blayout.html" %}
 
 {% block content %}
     <head>
@@ -38,34 +38,9 @@
                 <h4 class="content-text">Offered by {{ package.aname }}</h4>
                 <br>
             </div>
-            <button class="button-36" href="{{ package.link }}" style="width: 30%; margin: auto; display: block; text-transform: uppercase;">Sign up now!</button>
+            
             <div class="content-package">
                 <h2 class="content-text">Reviews</h2>
-                <p class="content-text">Purchased this package before? Leave a review to help others know more about it!</p>
-                {% with errors = get_flashed_messages(category_filter=["error"]) %}
-                {% if errors %}
-                    {% for message in errors %}
-                    <div class="alert alert-danger" role="alert">                
-                        {{ message }}
-                    </div>    
-                    {% endfor %}
-                {% endif %}
-                {% endwith %}
-                {% with successes = get_flashed_messages(category_filter=["success"]) %}
-                    {% if successes %}
-                    {% for message in successes %}
-                        <div class="alert alert-success" role="alert">                
-                        {{ message }}
-                        </div>    
-                    {% endfor %}
-                    {% endif %}
-                {% endwith %}   
-                <form method="post">
-                    <p class="content-text">Your rating:&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;<input id='rating' name='rating' type="range" min="1" max="5" step="1" value="5">&nbsp;&nbsp;5</p> 
-                    <textarea class="package-review-ta" name="details" id="details" type="text" value placeholder="Details" maxlength="1000" onkeypress="textAreaAdjust(this)" onkeyup="textAreaAdjust(this)" required></textarea>
-                    <button type="submit" class="button-submit" style="border-radius: 5px;">Submit</button>
-                </form>
-                <br>
                 {% for review in reviews %}
                     <div class="review-block">
                         {% if review.cID == session['cID'] %}

@@ -1,0 +1,33 @@
+{% extends "blayout.html" %}
+
+{% block content %}
+    <head>
+        <h1></h1>
+        <title>
+            VoyageVault (B) | Welcome
+        </title>
+    </head>
+    <body class="index-page">
+      <div class="center">
+        <p class="logo">VoyageVault</p>
+        <br>
+        <p class="content-text" style="font-size: larger;font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">FOR BUSINESSES</p>
+        <p class="content-text" style="font-size: larger;">
+          {% if session['aname'] %}
+            Welcome <strong>{{ session['aname'] }}</strong>, continue your journey with us
+          {% else %}
+            Expand your reach, become a partner today.
+          {% endif %}
+        </p>
+        <div class="layer" style="margin-top: 2em;">
+          <div>
+            <form>
+              <button class="button-36" formaction="{{ url_for('bmake_package') }}">Create a package</button>
+              <button class="button-36" formaction="{{ url_for('bmanage') }}">Manage packages</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </body>
+
+{% endblock %}
