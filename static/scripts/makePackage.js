@@ -40,7 +40,6 @@ function nextPrev(n) {
   var x = document.getElementsByClassName("tab");
 
   if (n == 1 && !validateForm()) return false;
-  //if(n == 1) document.getElementsByClassName("step")[currentTab].className += " finish";
   
   x[currentTab].style.display = "none";
   currentTab = currentTab + n;
@@ -66,11 +65,14 @@ function validateForm() {
     } else if ( y[i].value === "" && y[i].id === "dates" && document.getElementById('GRP').checked) {
       y[i].className += " invalid";
       valid = false;
-    }
+    } 
   }
   y = x[currentTab].getElementsByTagName("textarea");
   for (i = 0; i < y.length; i++) {
     if (y[i].value === "" && y[i].required == true) {      
+      y[i].className += " invalid";
+      valid = false;
+    } else if ( y[i].value === "" && y[i].id === "itinerary" && document.getElementById('GRP').checked) {
       y[i].className += " invalid";
       valid = false;
     }
@@ -121,6 +123,7 @@ function addCountry(element) {
     field.classList.add("text-field");
     field.placeholder = "Enter a country";
     field.required = true;
+    field.maxLength = 64;
     field.setAttribute("oninput","notInvalid(this)");
 
     let addBtn = document.createElement("button");
@@ -179,6 +182,7 @@ function addTag(element) {
   field.classList.add("text-field");
   field.placeholder = "Add a tag";
   field.required = true;
+  field.maxLength = 64;
   field.setAttribute("oninput","notInvalid(this)");
 
   let addBtn = document.createElement("button");
@@ -253,6 +257,7 @@ function addLocation(element) {
   field1.classList.add("text-field");
   field1.placeholder = "Add the location";
   field1.required = true;
+  field1.maxLength = 128;
   field1.setAttribute("oninput","notInvalid(this)");
 
   let field2 = document.createElement("input");
@@ -260,6 +265,7 @@ function addLocation(element) {
   field2.classList.add("text-field");
   field2.placeholder = "Add the region";
   field2.required = true;
+  field2.maxLength = 64;
   field2.setAttribute("oninput","notInvalid(this)");
 
   let field3 = document.createElement("input");
@@ -267,6 +273,7 @@ function addLocation(element) {
   field3.classList.add("text-field");
   field3.placeholder = "Add the country";
   field3.required = true;
+  field3.maxLength = 64;
   field3.setAttribute("oninput","notInvalid(this)");
 
   let addBtn = document.createElement("button");
@@ -317,7 +324,7 @@ function fixCountries() {
 
 function fixLocations() {
     var locations = document.getElementById('locations-form').getElementsByTagName('input');
-    let numLocations = parseInt(document.getElementById('hiddenLocation').value)/3;
+    let numLocations = parseInt(document.getElementById('hiddenLocation').value);
     let inputs = document.getElementById('locationInputs');
     for(var i=0;i<numLocations;++i)
         inputs.value = inputs.value + locations[i*3].value + "#" + locations[i*3+1].value + "#" + locations[i*3+2].value + ";";

@@ -25,9 +25,9 @@ function changeRating(element) {
 }
 
 function changeCapacity(element) {
-    document.getElementById('cap-text').innerHTML = "Availability >= " + element.value;
+    document.getElementById('cap-text').innerHTML = "Max Group Size <= " + element.value;
 }
 
 function changeCost(element) {
-    document.getElementById('cost-text').innerHTML = "Adult Cost <= " + element.value;
+    document.getElementById('cost-text').innerHTML = "Adult Cost <= $" + element.value;
 }

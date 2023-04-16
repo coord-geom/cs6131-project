@@ -1,81 +1,224 @@
 {% extends "blayout.html" %}
 
 {% block content %}
-    <head>
-        <h1></h1>
-        <title>
-            VoyageVault | {{ package.pname }}
-        </title>
+<head>
+    <title>Voyage Vault (B) | Edit Package</title>
+</head>
 
-        <script src="{{ url_for('static',filename='scripts/package.js')}}"></script>
-    </head>
-    <body class="page">
-        <div class="package-box">
-            <img src="{{ package.imagelink }}" class="package-page-img">
-            <h1 class="package-heading">{{ package.pname }}</h1>
-            <div class="content-package" >
-                <h4 class="content-text" style="text-align: center ;">{{ package.description }}</h4>
-                <br>
-                <div style="text-align: center;" class="content-text">
-                    {% if package.prating %}
-                        <!--{{ '%0.1f' | format(package.prating) }} stars-->
-                        {% for i in range(package.prating|int) %} <i class="fa-solid fa-star fa-lg"></i> {% endfor %}
-                        {% for i in range(5-package.prating|int) %} <i class="fa-regular fa-star fa-lg"></i> {% endfor %}
-                        <br><p style="font-size: larger;">{{ '%0.1f' | format(package.prating) }} stars by {{ reviews|length }} reviewers</p>
-                    {% else %}
-                        No ratings
-                    {% endif %}
-                </div>
-                <br>
-                {% if not package.itinerary %}
-                    <p class="content-text">This is a free-and-easy package.</p>
-                {% else %}
-                    <h2 class="content-text"><u>Itinerary</u></h2>
-                    <p class="content-text" style="white-space: pre-line;">{{ package.itinerary }}</p>
-                {% endif %}
-                <br>
-                <h3 class="content-text">Adult price: ${{ package.aprice }} <br> Child price: ${{ package.cprice }}</h3>
-                <h4 class="content-text">Offered by {{ package.aname }}</h4>
-                <br>
+<style>
+    .tab {
+        display: none;
+    }
+
+    .step {
+        height: 15px;
+        width: 15px;
+        margin: 0 2px;
+        background-color: #bbbbbb;
+        border: none;
+        border-radius: 50%;
+        display: inline-block;
+        opacity: 0.5;
+    }
+
+    .step.active {
+        opacity: 1;
+    }
+
+    .step.finish {
+        background-color: #04AA6D;
+    }
+
+    input.invalid {
+        background-color: rgba(255, 221, 221, 0.3);
+    }
+
+    textarea.invalid {
+        background-color: rgba(255, 221, 221, 0.3);
+    }
+
+    .item {
+        margin: 2px;
+        padding-right: 15px;
+        padding-left: 5px;
+    }
+</style>
+
+<body class="page" method="post">
+    <h1 class="heading-center">Edit Package</h1>
+    <form class="package-box" id="form" style="padding: 2em;" method="post">
+        <div class="tab">
+            <img src="{{ package.imagelink }}" class="package-page-img" id="image" style="border-radius: 30px;" onerror="document.getElementById('imgerr').hidden=false;" onload="document.getElementById('imgerr').hidden=true;">
+            <p id="imgerr" class="content-text" style="text-align: center;" hidden="true">Nothing seems to be shown, check your link again</p>
+            <br>
+            <p class="content-text" style="text-align: center;">Your image will appear above</p>
+            <div class="field-group">
+                <span class="fa-solid fa-image" aria-hidden="true" style="flex: 0%"></span>
+                <input id="imglink" name="imglink" placeholder="Enter link of image here" class="text-field" oninput="loadImage(this); notInvalid(this);" style="flex: 15 50%" maxlength="512" value="{{ package.imagelink }}" required>
             </div>
-            
-            <div class="content-package">
-                <h2 class="content-text">Reviews</h2>
-                {% for review in reviews %}
-                    <div class="review-block">
-                        {% if review.cID == session['cID'] %}
-                            <p class="content-text">
-                                <u><b style="font-size: large;">{{ review.cname }}</b></u>&nbsp;
-                                {% for i in range(review.rating|int) %} <i class="fa-solid fa-star"></i> {% endfor %}
-                                {% for i in range(5-review.rating|int) %} <i class="fa-regular fa-star"></i> {% endfor %}
-                                <br>
-                                <p class="content-text" id="details_mine">{{ review.content }}</p>
-                            </p>
-                            <form method="post" hidden="true" id="updateForm">
-                                <p class="content-text">Your rating:&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;<input id='rating' name='rating' type="range" min="1" max="5" step="1" value="{{ review.rating }}">&nbsp;&nbsp;5</p> 
-                                <textarea class="package-review-ta" name="update-review" id="update-review" type="text" maxlength="1000" onkeypress="textAreaAdjust(this)" onkeyup="textAreaAdjust(this)" required>{{ review.content }}</textarea>
-                                <button type="submit" class="button-submit" style="border-radius: 5px;" onclick="return confirm('Are you sure you want to edit your review?')">Confirm Changes</button>
-                            </form>
-                            <button id="editButton" class="button-submit" style="float: left;" onclick="edit(this)">Edit</button> 
-                            <button id="cancelChanges" class="button-delete" onclick="cancelChanges(this)" hidden="true">Cancel Changes</button>
-                            <form method="post">
-                                <input id="delete-review" name="delete-review" hidden="true">
-                                <button type="submit" class="button-delete" onclick="return confirm('Are you sure you want to delete your review?')">Delete</button>
-                            </form>
-                        {% else %}
-                            <p class="content-text">
-                                <u><b style="font-size: large;">{{ review.cname }}</b></u>&nbsp;
-                                {% for i in range(review.rating|int) %} <i class="fa-solid fa-star"></i> {% endfor %}
-                                {% for i in range(5-review.rating|int) %} <i class="fa-regular fa-star"></i> {% endfor %}
-                                <br>
-                                {{ review.content }}
-                            </p>
-                        {% endif %}
-                    </div>
-                    <br>
-                {% endfor %}
+            <div class="content-text" style="font-size: large; margin-left: 5px;">
+                Package type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                {% if package.tourtype == 'GRP' %}
+                    <input type="radio" value="GRP" id="GRP" name="type" checked required><label for="GRP">Tour Group</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" value="FNE" id="FNE" name="type"><label for="FNE">Free-and-Easy</label>
+                {% else %}
+                    <input type="radio" value="GRP" id="GRP" name="type" required><label for="GRP">Tour Group</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" value="FNE" id="FNE" name="type" checked><label for="FNE">Free-and-Easy</label>
+                {% endif %}
+            </div>
+            <div class="field-group">
+                <span class="fa-solid fa-pencil" aria-hidden="true" style="flex: 0%"></span>
+                <input id="pname" name="pname" placeholder="Enter title" class="text-field" style="flex: 15 50%" maxlength="128" oninput="notInvalid(this)" value="{{ package.pname }}" required>
+            </div>
+            <div class="field-group">
+                <span class="fa-solid fa-pencil" aria-hidden="true" style="flex: 0%;"></span>
+                <textarea id="description" name="description" placeholder="Enter description" class="text-field" style="flex: 15 50%" maxlength="512" oninput="notInvalid(this)" onkeypress="textAreaAdjust(this)" onkeyup="textAreaAdjust(this)" required>{{ package.description }}</textarea>
+            </div>
+            <div class="field-group">
+                <span class="fa-solid fa-list" aria-hidden="true" style="flex: 0%;"></span>
+                <textarea id="itinerary" name="itinerary" placeholder="Enter itinerary (leave blank if free-and-easy)" class="text-field" style="flex: 15 50%" maxlength="4000" oninput="notInvalid(this)" onload="textAreaAdjust(this)" onkeypress="textAreaAdjust(this)" onkeyup="textAreaAdjust(this)">{% if package.itinerary %}{{ package.itinerary }}{% endif %}</textarea>
+            </div>
+            <div class="field-group" style="margin: 0em 0.5em 2em 0em; width: 24.1%; float: left;">
+                <span class="fa-solid fa-clock" aria-hidden="true" style="flex: 11%"></span>
+                <input id="duration" name="duration" placeholder="Enter duration in days" class="text-field" style="flex: 15 50%; width: 30%;" oninput="notInvalid(this)" type="number" min="1" value="{{ package.duration }}" required>
+            </div>
+            <div class="field-group" style="margin: 0em 0.5em 2em 0.5em; width: 24.1%; float: left;">
+                <span class="fa-solid fa-dollar-sign" aria-hidden="true" style="flex: 7%"></span>
+                <input id="aprice" name="aprice" placeholder="Enter adult price in SGD" class="text-field" style="flex: 15 50%; width: 30%;" oninput="notInvalid(this)" type="number" min="1" value="{{ package.aprice }}" required>
+            </div>
+            <div class="field-group" style="margin: 0em 0em 2em 0.5em; width: 24.1%; float: left;">
+                <span class="fa-solid fa-dollar-sign" aria-hidden="true" style="flex: 7%"></span>
+                <input id="cprice" name="cprice" placeholder="Enter child price in SGD" class="text-field" style="flex: 15 50%; width: 30%;" oninput="notInvalid(this)" type="number" min="1" value="{{ package.cprice }}" required>
+            </div>
+            <div class="field-group" style="margin: 0em 0em 2em 0.5em; width: 24.1%; float: left;">
+                <span class="fa-solid fa-users" aria-hidden="true" style="flex: 10%"></span>
+                <input id="cap" name="cap" placeholder="Enter group capacity" class="text-field" style="flex: 15 50%; width: 30%;" oninput="notInvalid(this)" type="number" min="0" value="{% if package.maxsize %}{{ package.maxsize }}{% endif %}">
+            </div>
+            <div class="field-group" style="width: 100%;">
+                <span class="fa-solid fa-link" aria-hidden="true" style="flex: 0%"></span>
+                <input id="link" name="link" placeholder="Enter link to your website here" class="text-field" style="flex: 15 50%" maxlength="512" oninput="notInvalid(this)" value="{{ package.link }}" required>
             </div>
         </div>
-    </body>
+        <div class="tab">
+            <p class="content-text" style="text-align: center; font-size: larger;">Now to add the locations...</p>
+            <br>
+            <datalist id="countries">
+                {% for country in countries %}
+                    <option value="{{country.cname}}"></option>
+                {% endfor %}    
+            </datalist>
+            <p class="content-text" style="font-size: large;">Countries:</p>
+            <div id="countries-form">
+                {% for i in range(visiting|length - 1)%}
+                    <div class="field-group">
+                        <input list="countries" class="text-field" placeholder="Add a country" oninput="notInvalid(this)" value="{{ visiting[i].cname }}" maxlength="64" required>
+                        <button type="button" onclick="addCountry(this)" class="button-submit" style="display: none;">Add</button>
+                        <button type="button" onclick="removeCountry(this)" class="button-delete">Remove</button>
+                    </div>
+                {% endfor %}
+                <div class="field-group">
+                    <input list="countries" class="text-field" placeholder="Add a country" oninput="notInvalid(this)" value="{{ visiting[-1].cname }}" maxlength="64" required>
+                    <button type="button" onclick="addCountry(this)" class="button-submit">Add</button>
+                    <button type="button" onclick="removeCountry(this)" class="button-delete" style="display: none;">Remove</button>
+                </div>
+                <input type="number" hidden="true" id="hiddenCountry" name="hiddenCountry" value="{{ visiting|length }}">
+                <input type="text" hidden="true" id="countryInputs" name="countryInputs" value="">
+            </div>
+            <datalist id="locations">
+                {% for location in locations %}
+                    <option value="{{ location.lname }}"></option>
+                {% endfor %}    
+            </datalist>
+            <datalist id="regions">
+                {% for region in regions %}
+                    <option value="{{ region.region }}"></option>
+                {% endfor %}    
+            </datalist>
+            <p class="content-text" style="font-size: large;">Places of Interest (to recommend to customers if it is a free-and-easy package):</p>
+            <div id="locations-form">
+                {% for i in range(plocs|length - 1) %}
+                    <div>
+                        <div class="field-group" style="float: left; width: 40%; margin-right: 1em;">
+                            <input list="locations" class="text-field" placeholder="Add the location" oninput="notInvalid(this)" value="{{ plocs[i].lname }}" maxlength="128" required>
+                        </div>
+                        <div class="field-group" style="float: left; width: 28.5%; margin-right: 1em;">
+                            <input list="regions" class="text-field" placeholder="Add the region" oninput="notInvalid(this)" value="{{ plocs[i].region }}" maxlength="64" required>
+                        </div>
+                        <div class="field-group" style="float: left; width: 28.5%;">
+                            <input list="countries" class="text-field" placeholder="Add the country" oninput="notInvalid(this)" value="{{ countries[plocs[i].countryID-1].cname }}" maxlength="64" required>
+                            <button type="button" onclick="addLocation(this)" class="button-submit" style="display: none;">Add</button>
+                            <button type="button" onclick="removeLocation(this)" class="button-delete" >Remove</button>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div>
+                    <div class="field-group" style="float: left; width: 40%; margin-right: 1em;">
+                        <input list="locations" class="text-field" placeholder="Add the location" oninput="notInvalid(this)" value="{{ plocs[-1].lname }}" maxlength="128" required>
+                    </div>
+                    <div class="field-group" style="float: left; width: 28.5%; margin-right: 1em;">
+                        <input list="regions" class="text-field" placeholder="Add the region" oninput="notInvalid(this)" value="{{ plocs[-1].region }}" maxlength="64" required>
+                    </div>
+                    <div class="field-group" style="float: left; width: 28.5%;">
+                        <input list="countries" class="text-field" placeholder="Add the country" oninput="notInvalid(this)" value="{{ countries[plocs[-1].countryID-1].cname }}" maxlength="64" required>
+                        <button type="button" onclick="addLocation(this)" class="button-submit">Add</button>
+                        <button type="button" onclick="removeLocation(this)" class="button-delete" style="display: none;">Remove</button>
+                    </div>
+                </div>
+                <input hidden="true" id="hiddenLocation" name="hiddenLocation" value="{{ plocs|length }}">
+                <input type="text" hidden="true" id="locationInputs" name="locationInputs" value="">
+            </div>
+        </div>
+        <div class="tab">
+            <p class="content-text" style="text-align: center; font-size: larger;">Now to add some tags...</p>
+            <br>
+            <datalist id="tags">
+                {% for tag in tags %}
+                    <option value="{{tag.tag}}"></option>
+                {% endfor %}    
+            </datalist>
+            <div id="tags-form">
+                {% for i in range(ptag|length - 1)%}
+                    <div class="field-group">
+                        <input list="tags" class="text-field" placeholder="Add a tag" oninput="notInvalid(this)" value="{{ ptag[i].tag }}" maxlength="64" required>
+                        <button type="button" onclick="addTag(this)" class="button-submit" style="display: none;">Add</button>
+                        <button type="button" onclick="removeTag(this)" class="button-delete" >Remove</button>
+                    </div>
+                {% endfor %}
+                <div class="field-group">
+                    <input list="tags" class="text-field" placeholder="Add a tag" oninput="notInvalid(this)" value="{{ ptag[-1].tag }}" maxlength="64" required>
+                    <button type="button" onclick="addTag(this)" class="button-submit">Add</button>
+                    <button type="button" onclick="removeTag(this)" class="button-delete" style="display: none;">Remove</button>
+                </div>
+                <input hidden="true" id="hiddenTag" name="hiddenTag" value="{{ ptag|length }}">
+                <input type="text" hidden="true" id="tagInputs" name="tagInputs" value="">
+            </div>
+            <br>
+            <p class="content-text" style="text-align: center; font-size: larger;">Now to add some departure dates (ignore if it is free-and-easy)...</p>
+            <div class="field-group">
+                <input id="dates" name="dates" form="form" type="text" class="text-field date" placeholder="Pick the multiple dates" oninput="notInvalid(this)" readonly value="{{date}}">
+            </div>
+        </div>
+        <br>
+        <div style="text-align: right;">
+            <input id="toDelete" name="toDelete" hidden="true" value="0">
+            <button class="button-36" type="submit" id="deletePackage" onclick="if(!confirm('Are you sure you want to delete this package?')){ return false; } else { document.getElementById('toDelete').value = 1; return true;}">Delete</button>
+            <button class="button-36" type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+            <button class="button-36" type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+            <span class="step"></span>
+            <span class="step"></span>
+            <span class="step"></span>
+        </div>
+    </form>
 
+    <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+    <script src="{{ url_for('static',filename='scripts/makePackage.js')}}"></script>
+
+
+</body>
 {% endblock %}

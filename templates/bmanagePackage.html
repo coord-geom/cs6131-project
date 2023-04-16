@@ -12,7 +12,7 @@
           <div class="package-list">
             {% for package in packages %}
             <main class="package">
-              <a href="{{ url_for('bview_package', pid=package.pID)}}" style="text-decoration: none;">
+              <a href="{{ url_for('bedit', pid=package.pID)}}" style="text-decoration: none;">
                 <div class="package-image">
                   <img src="{{ package.imagelink }}">
                 </div>
@@ -32,10 +32,10 @@
                     </div>
                 </div>
                 <div class="package-info">
-                    <span class="fa fa-tag" style="cursor:default; "></span> 
+                    <span class="fa fa-tag" style="cursor:default;"></span> 
                     {% for tag in ptag %}
                       {% if tag.pID == package.pID %}
-                        <a href="{{ url_for('bsearch', tagname=tag.tag) }}">{{ tag.tag }}</a>
+                        <a>{{ tag.tag }}</a>
                       {% endif %}
                     {% endfor %}
                     

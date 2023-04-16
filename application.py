@@ -165,7 +165,9 @@ def search(tagname=None):
         cost = cursor.fetchone() 
         mincost = cost['a']
         maxcost = cost['b']
-        cursor.execute('SELECT * FROM package')
+        cursor.execute('SELECT MAX(maxsize) m FROM package')
+        capacity = cursor.fetchone()['m']
+
         fields = ['package name','location','tags','agency']
 
         if request.method == 'POST':
@@ -178,13 +180,13 @@ def search(tagname=None):
                 cap = request.form['cap']
                 cost = request.form['cost']
                 query = 'SELECT distinct p.* FROM package p, tourgroup g '
-                query2 = " and departure >= %s and (p.pid=g.pid or p.pid not in (SELECT pid FROM tourgroup)) and cursize+%s <= maxsize and prating >= %s and aprice <= %s"
+                query2 = " and ((departure >= %s and p.pid=g.pid) or p.pid not in (SELECT pid FROM tourgroup)) and (maxsize <= %s or maxsize is NULL) and prating >= %s and aprice <= %s"
                 if category == fields[0]:
                     query += 'WHERE pname like %s'
                     query += query2
                     cursor.execute(query, (search,date,cap,rating,cost,))
                 elif category == fields[1]:
-                    query += ', location l, visit v, country c WHERE (lname like %s or region like %s or cname like %s) and v.pid=p.pid and v.lid=l.lid and l.countryid = c.countryid'
+                    query += ', location l, (SELECT * FROM visit UNION SELECT * FROM recommend) v, country c WHERE (lname like %s or region like %s or cname like %s) and v.pid=p.pid and v.lid=l.lid and l.countryid = c.countryid'
                     query += query2
                     cursor.execute(query, (search,search,search,date,cap,rating,cost,))
                 elif category == fields[2]:
@@ -199,7 +201,7 @@ def search(tagname=None):
                 cursor.execute('SELECT * FROM ptag')
                 ptag = cursor.fetchall()
                 cursor.close()
-                return render_template('search.html',packages=packages, ptag=ptag, fields=fields, search=search1, maxcost=maxcost, mincost=mincost)
+                return render_template('search.html',packages=packages, ptag=ptag, fields=fields, search=search1, maxcost=maxcost, mincost=mincost, capacity=capacity)
         elif not tagname == None:
             query = 'SELECT distinct p.* FROM package p, ptag t WHERE p.pid=t.pid and tag like %s'
             cursor.execute(query, (tagname,))
@@ -207,17 +209,43 @@ def search(tagname=None):
             cursor.execute('SELECT * FROM ptag')
             ptag = cursor.fetchall()
             cursor.close()
-            return render_template('search.html',packages=packages, ptag=ptag, fields=fields, maxcost=maxcost, mincost=mincost)
+            return render_template('search.html',packages=packages, ptag=ptag, fields=fields, maxcost=maxcost, mincost=mincost, capacity=capacity)
         else:
-            packages = cursor.fetchall() #fetch all records
+            cursor.execute('SELECT * FROM package')
+            packages = cursor.fetchall()
             cursor.execute('SELECT * FROM ptag')
             ptag = cursor.fetchall()
             cursor.close()
-            return render_template('search.html',packages=packages, ptag=ptag, fields=fields, maxcost=maxcost, mincost=mincost)
+            return render_template('search.html',packages=packages, ptag=ptag, fields=fields, maxcost=maxcost, mincost=mincost, capacity=capacity)
     return redirect(url_for('login'))
 
 @app.route('/profile',methods=['GET','POST'])
 def profile():
+    if 'loggedin' in session and 'cID' in session:
+        if request.method == 'GET':
+            return render_template('profile.html')
+        elif request.method == 'POST':
+            password = request.form['password']
+            email = request.form['email']
+            hpnum = request.form['hpnum']
+
+            if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+                flash('Invalid email address! Updates not done.',category='error')
+            else:
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                cursor.execute('UPDATE customer set email=%s, password=%s, hpnum=%s WHERE cid = %s ', (email, generate_password_hash(password), hpnum, session['cID'],))
+                mysql.connection.commit() #note that you need to commit the changes for INSERT,UPDATE and DELETE statements
+                cursor.close()
+                flash('You have updated your email, hotline and password successfully',category='success')
+
+            redirect(url_for('profile'))
+
+    elif 'loggedin' not in session:
+        return redirect(url_for('login'))
+    return redirect(url_for('bprofile'))
+
+
+
     if 'loggedin' in session:
         if 'cID' in session:
             return render_template('profile.html')
@@ -231,8 +259,8 @@ def profile():
                     flash('Invalid email address! Updates not done.',category='error')
                 else:
                     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                    cursor.execute('UPDATE customer set email=%s, password=%s, hpnum=%s WHERE id = %s ', (email, generate_password_hash(password), hpnum, session['cID'],))
-                    mysql.connection.commit() #note that you need to commit the changes for INSERT,UPDATE and DELETE statements
+                    cursor.execute('UPDATE customer set email=%s, password=%s, hpnum=%s WHERE cid = %s ', (email, generate_password_hash(password), hpnum, session['cID'],))
+                    mysql.connection.commit()
                     cursor.close()
                     flash('You have updated your email, contact number and password successfully',category='success')
             elif request.method == 'GET':
@@ -248,12 +276,15 @@ def view_package(pid):
             pids = cursor.fetchall()
             return redirect(url_for('view_package',pid=random.choice(pids)['pid']))
         elif request.method == 'GET':
-            cursor.execute('SELECT p.*, aname FROM package p, agency a WHERE pid = %s and p.aid=a.aid',(str(pid),))
+            cursor.execute('SELECT p.*, aname, hotline FROM package p, agency a WHERE pid = %s and p.aid=a.aid',(str(pid),))
             package = cursor.fetchone()
             cursor.execute('SELECT r.*, concat(fname,\' \',lname) cname FROM review r, customer c WHERE pid = %s and r.cid = c.cid',(str(pid),))
             reviews = cursor.fetchall()
+            cursor.execute('SELECT departure FROM tourgroup WHERE pid=%s',(pid,))
+            dates = cursor.fetchall()
+            date = ','.join([str(d['departure']) for d in dates])
             cursor.close()
-            return render_template('package.html',package=package,reviews=reviews)
+            return render_template('package.html',package=package,reviews=reviews,date=date)
         elif request.method == 'POST':
             if 'details' in request.form:
                 rating = request.form['rating']
@@ -281,10 +312,6 @@ def view_package(pid):
     else:
         return redirect(url_for('login'))
     
-@app.route('/calendar')
-def calendar():
-    return render_template('calendar.html')
-
 @app.route('/reviews', methods=['GET','POST'])
 def review():
     if 'loggedin' in session and 'cID' in session:
@@ -331,11 +358,14 @@ def bmake_package():
         ptype = request.form['type']
         pname = request.form['pname']
         desc = request.form['description']
-        iti = request.form['itinerary']
+        iti = None
+        capacity = None
+        if ptype == 'GRP':
+            iti = request.form['itinerary']
+            capacity = request.form['cap']
         duration = request.form['duration']
         aprice = request.form['aprice']
         cprice = request.form['cprice']
-        capacity = request.form['cap']
         link = request.form['link']
 
         countries = request.form['countryInputs'].split(';')
@@ -343,10 +373,10 @@ def bmake_package():
         tags = request.form['tagInputs'].split(';')
         dates = request.form['dates'].split(',')
 
-        cursor.execute('INSERT INTO package (pid,aid,pname,description,duration,aprice,cprice,link,itinerary,tourtype,imagelink) VALUES (NULL,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',(session['aID'],pname,desc,duration,aprice,cprice,link,iti,ptype,imglink,))
+        cursor.execute('INSERT INTO package (pid,aid,pname,description,duration,aprice,cprice,link,itinerary,tourtype,imagelink,maxsize) VALUES (NULL,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',(session['aID'],pname,desc,duration,aprice,cprice,link,iti,ptype,imglink,capacity,))
         cursor.connection.commit()
 
-        cursor.execute('SELECT pID FROM package WHERE aid=%s and pname=%s and description=%s and duration=%s and aprice=%s and cprice=%s and link=%s and itinerary=%s and tourtype=%s and imagelink=%s',(session['aID'],pname,desc,duration,aprice,cprice,link,iti,ptype,imglink,))
+        cursor.execute('SELECT pID FROM package WHERE aid=%s and pname=%s and description=%s and duration=%s and aprice=%s and cprice=%s and link=%s and itinerary=%s and tourtype=%s and imagelink=%s and maxsize=%s',(session['aID'],pname,desc,duration,aprice,cprice,link,iti,ptype,imglink,capacity,))
         pid = cursor.fetchone()['pID']
 
 
@@ -398,7 +428,7 @@ def bmake_package():
         
         if ptype == 'GRP':
             for date in dates:
-                cursor.execute('INSERT INTO tourgroup VALUES (%s,%s,0,%s)',(pid,capacity,date,))
+                cursor.execute('INSERT INTO tourgroup VALUES (%s,%s)',(pid,date,))
                 cursor.connection.commit()
 
         cursor.close()
@@ -411,12 +441,15 @@ def bview_package(pid):
     
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     if request.method == 'GET':
-        cursor.execute('SELECT p.*, aname FROM package p, agency a WHERE pid = %s and p.aid=a.aid',(str(pid),))
+        cursor.execute('SELECT p.*, aname, hotline FROM package p, agency a WHERE pid = %s and p.aid=a.aid',(str(pid),))
         package = cursor.fetchone()
         cursor.execute('SELECT r.*, concat(fname,\' \',lname) cname FROM review r, customer c WHERE pid = %s and r.cid = c.cid',(str(pid),))
         reviews = cursor.fetchall()
+        cursor.execute('SELECT departure FROM tourgroup WHERE pid=%s',(pid,))
+        dates = cursor.fetchall()
+        date = ','.join([str(d['departure']) for d in dates])
         cursor.close()
-        return render_template('bpackage.html',package=package,reviews=reviews)
+        return render_template('bpackage.html',package=package,reviews=reviews,date=date)
 
 @app.route('/b/manage')
 def bmanage():
@@ -435,9 +468,9 @@ def bmanage():
 
 @app.route('/b/profile',methods=['GET','POST'])
 def bprofile():
-    if 'loggedin' in session and 'cID' in session:
+    if 'loggedin' in session and 'aID' in session:
         if request.method == 'GET':
-            return redirect(url_for('profile'))
+            return render_template('bprofile.html')
         elif request.method == 'POST':
             password = request.form['password']
             email = request.form['email']
@@ -447,13 +480,16 @@ def bprofile():
                 flash('Invalid email address! Updates not done.',category='error')
             else:
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                cursor.execute('UPDATE agency set email=%s, password=%s, hpnum=%s WHERE id = %s ', (email, generate_password_hash(password), hpnum, session['aID'],))
+                cursor.execute('UPDATE agency set aemail=%s, apassword=%s, hotline=%s WHERE aid = %s ', (email, generate_password_hash(password), hpnum, session['aID'],))
                 mysql.connection.commit() #note that you need to commit the changes for INSERT,UPDATE and DELETE statements
                 cursor.close()
                 flash('You have updated your email, hotline and password successfully',category='success')
+
+            redirect(url_for('bprofile'))
+
     elif 'loggedin' not in session:
         return redirect(url_for('blogin'))
-    return render_template('bprofile.html')
+    return redirect(url_for('profile'))
 
 @app.route('/b/search',methods=['GET','POST'])
 @app.route('/b/search/<tagname>',methods=['GET','POST'])
@@ -467,7 +503,9 @@ def bsearch(tagname=None):
     cost = cursor.fetchone() 
     mincost = cost['a']
     maxcost = cost['b']
-    cursor.execute('SELECT * FROM package')
+    cursor.execute('SELECT MAX(maxsize) m FROM package')
+    capacity = cursor.fetchone()['m']
+    
     fields = ['package name','location','tags','agency']
     
     if request.method == 'POST':
@@ -480,13 +518,13 @@ def bsearch(tagname=None):
             cap = request.form['cap']
             cost = request.form['cost']
             query = 'SELECT distinct p.* FROM package p, tourgroup g '
-            query2 = " and departure >= %s and (p.pid=g.pid or p.pid not in (SELECT pid FROM tourgroup)) and cursize+%s <= maxsize and prating >= %s and aprice <= %s"
+            query2 = " and ((departure >= %s and p.pid=g.pid) or p.pid not in (SELECT pid FROM tourgroup)) and (maxsize <= %s or maxsize is NULL) and prating >= %s and aprice <= %s"
             if category == fields[0]:
                 query += 'WHERE pname like %s'
                 query += query2
                 cursor.execute(query, (search,date,cap,rating,cost,))
             elif category == fields[1]:
-                query += ', location l, visit v, country c WHERE (lname like %s or region like %s or cname like %s) and v.pid=p.pid and v.lid=l.lid and l.countryid = c.countryid'
+                query += ', location l, (SELECT * FROM visit UNION SELECT * FROM recommend) v, country c WHERE (lname like %s or region like %s or cname like %s) and v.pid=p.pid and v.lid=l.lid and l.countryid = c.countryid'
                 query += query2
                 cursor.execute(query, (search,search,search,date,cap,rating,cost,))
             elif category == fields[2]:
@@ -501,7 +539,7 @@ def bsearch(tagname=None):
             cursor.execute('SELECT * FROM ptag')
             ptag = cursor.fetchall()
             cursor.close()
-            return render_template('bsearch.html',packages=packages, ptag=ptag, fields=fields, search=search1, maxcost=maxcost, mincost=mincost)
+            return render_template('bsearch.html',packages=packages, ptag=ptag, fields=fields, search=search1, maxcost=maxcost, mincost=mincost, capacity=capacity)
     elif not tagname == None:
         query = 'SELECT distinct p.* FROM package p, ptag t WHERE p.pid=t.pid and tag like %s'
         cursor.execute(query, (tagname,))
@@ -509,13 +547,14 @@ def bsearch(tagname=None):
         cursor.execute('SELECT * FROM ptag')
         ptag = cursor.fetchall()
         cursor.close()
-        return render_template('bsearch.html',packages=packages, ptag=ptag, fields=fields, maxcost=maxcost, mincost=mincost)
+        return render_template('bsearch.html',packages=packages, ptag=ptag, fields=fields, maxcost=maxcost, mincost=mincost, capacity=capacity)
     else:
-        packages = cursor.fetchall() #fetch all records
+        cursor.execute('SELECT * FROM package')
+        packages = cursor.fetchall() 
         cursor.execute('SELECT * FROM ptag')
         ptag = cursor.fetchall()
         cursor.close()
-        return render_template('bsearch.html',packages=packages, ptag=ptag, fields=fields, maxcost=maxcost, mincost=mincost)
+        return render_template('bsearch.html',packages=packages, ptag=ptag, fields=fields, maxcost=maxcost, mincost=mincost, capacity=capacity)
     return render_template('bsearch.html')
 
 @app.route('/b/edit/<pid>',methods=['GET','POST'])
@@ -525,12 +564,131 @@ def bedit(pid):
     
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     if request.method == 'GET':
-        cursor.execute('SELECT p.*, aname FROM package p, agency a WHERE pid = %s and p.aid=a.aid',(str(pid),))
+        cursor.execute('SELECT p.*, aname FROM package p, agency a WHERE pid = %s and p.aid=a.aid and p.aid=%s',(str(pid),session['aID'],))
         package = cursor.fetchone()
-        cursor.execute('SELECT r.*, concat(fname,\' \',lname) cname FROM review r, customer c WHERE pid = %s and r.cid = c.cid',(str(pid),))
-        reviews = cursor.fetchall()
+        if not package:
+            return redirect(url_for('bmanage'))
+
+        cursor.execute('SELECT cname FROM country c, packageDest v WHERE c.countryid = v.countryid and v.pid=%s',(pid,))
+        visiting = cursor.fetchall()
+        cursor.execute('SELECT cname FROM country')
+        countries = cursor.fetchall()
+        cursor.execute('SELECT distinct tag FROM ptag ORDER BY tag')
+        tags = cursor.fetchall()
+        cursor.execute('SELECT distinct region FROM location')
+        regions = cursor.fetchall()
+        cursor.execute('SELECT distinct lname FROM location')
+        locations = cursor.fetchall()
+
+        if package['tourtype'] == 'GRP':
+            cursor.execute('SELECT l.* FROM location l, visit v WHERE l.lid=v.lid and v.pid=%s',(pid,))
+        else:
+            cursor.execute('SELECT l.* FROM location l, recommend v WHERE l.lid=v.lid and v.pid=%s',(pid,))
+        plocs = cursor.fetchall()
+        cursor.execute('SELECT * FROM ptag WHERE pid=%s',(pid,))
+        ptag = cursor.fetchall()
+        cursor.execute('SELECT departure FROM tourgroup WHERE pid=%s',(pid,))
+        dates = cursor.fetchall()
+        date = ','.join([str(d['departure']) for d in dates])
         cursor.close()
-        return render_template('bpackage.html',package=package,reviews=reviews)
+        return render_template('beditPackage.html',package=package,countries=countries,visiting=visiting,tags=tags,regions=regions,locations=locations,plocs=plocs,ptag=ptag,date=date)
+    elif request.method == 'POST':
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+        if request.form['toDelete'] == "1":
+            cursor.execute('DELETE FROM package WHERE pid=%s',(pid,))
+            cursor.connection.commit()
+
+            return redirect(url_for('bmanage'))
+        
+        else:
+
+            imglink = request.form['imglink']
+            ptype = request.form['type']
+            pname = request.form['pname']
+            desc = request.form['description']
+            iti = None
+            capacity = None
+            if ptype == 'GRP':
+                iti = request.form['itinerary']
+                capacity = request.form['cap']
+            duration = request.form['duration']
+            aprice = request.form['aprice']
+            cprice = request.form['cprice']
+            link = request.form['link']
+
+            countries = request.form['countryInputs'].split(';')
+            locations = request.form['locationInputs'].split(';')
+            tags = request.form['tagInputs'].split(';')
+            dates = request.form['dates'].split(',')
+
+            cursor.execute('UPDATE package SET pname=%s, description=%s, duration=%s, aprice=%s, cprice=%s, link=%s, itinerary=%s, tourtype=%s, imagelink=%s, maxsize=%s WHERE pid=%s',(pname,desc,duration,aprice,cprice,link,iti,ptype,imglink,capacity,pid,))
+            cursor.connection.commit()
+
+            cursor.execute('DELETE FROM packageDest WHERE pid=%s',(pid,))
+            cursor.connection.commit()
+            cursor.execute('DELETE FROM ptag WHERE pid=%s',(pid,))
+            cursor.connection.commit()
+            cursor.execute('DELETE FROM visit WHERE pid=%s',(pid,))
+            cursor.connection.commit()
+            cursor.execute('DELETE FROM recommend WHERE pid=%s',(pid,))
+            cursor.connection.commit()
+            cursor.execute('DELETE FROM tourgroup WHERE pid=%s',(pid,))
+            cursor.connection.commit()
+
+            for country in countries:
+                if country == '':
+                    break
+                cursor.execute('SELECT countryID FROM country WHERE cname=%s',(country,))
+                cid = cursor.fetchone()['countryID']
+                cursor.execute('SELECT * FROM packageDest WHERE pid=%s and countryid=%s',(pid,cid,))
+                any = cursor.fetchall()
+                if not any:
+                    cursor.execute('INSERT INTO packageDest VALUES (%s,%s)',(pid,cid,))
+                    cursor.connection.commit()
+            
+            for tag in tags:
+                if tag == '':
+                    break
+                cursor.execute('SELECT * FROM ptag WHERE pid=%s and tag=%s',(pid,tag,))
+                any = cursor.fetchall()
+                if not any:
+                    cursor.execute('INSERT INTO ptag VALUES (%s,%s)',(pid,tag,))
+                    cursor.connection.commit()
+
+            for location in locations:
+                if location == '':
+                    break
+                lname, region, cname = location.split('#')
+                cursor.execute('SELECT countryID FROM country WHERE cname=%s',(cname,))
+                cid = cursor.fetchone()['countryID']
+                cursor.execute('SELECT * FROM location WHERE lname=%s and region=%s and countryid=%s',(lname,region,cid,))
+                any = cursor.fetchall()
+                if not any:
+                    cursor.execute('INSERT INTO location VALUES (NULL,%s,%s,%s)',(lname,region,cid,))
+                    cursor.connection.commit()
+                cursor.execute('SELECT lID FROM location WHERE lname=%s and region=%s and countryid=%s',(lname,region,cid,))
+                lid = cursor.fetchone()['lID']
+                if ptype == 'GRP':
+                    cursor.execute('SELECT * FROM visit WHERE pid=%s and lid=%s',(pid,lid,))
+                    any = cursor.fetchall()
+                    if not any:
+                        cursor.execute('INSERT INTO visit VALUES (%s,%s)',(pid,lid,))
+                        cursor.connection.commit()
+                elif ptype == 'FNE':
+                    cursor.execute('SELECT * FROM recommend WHERE pid=%s and lid=%s',(pid,lid,))
+                    any = cursor.fetchall()
+                    if not any:
+                        cursor.execute('INSERT INTO recommend VALUES (%s,%s)',(pid,lid,))
+                        cursor.connection.commit()
+            
+            if ptype == 'GRP':
+                for date in dates:
+                    cursor.execute('INSERT INTO tourgroup VALUES (%s,%s)',(pid,date,))
+                    cursor.connection.commit()
+
+        cursor.close()
+        return redirect(url_for('bview_package',pid=pid))
 
 if __name__ == '__main__':
     app.run(debug=True)

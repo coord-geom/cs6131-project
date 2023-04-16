@@ -72,7 +72,7 @@
             </div>
             <div class="field-group">
                 <span class="fa-solid fa-list" aria-hidden="true" style="flex: 0%;"></span>
-                <textarea id="itinerary" name="itinerary" placeholder="Enter itinerary" class="text-field" style="flex: 15 50%" maxlength="512" oninput="notInvalid(this)" onkeypress="textAreaAdjust(this)" onkeyup="textAreaAdjust(this)" required></textarea>
+                <textarea id="itinerary" name="itinerary" placeholder="Enter itinerary (leave blank if free-and-easy)" class="text-field" style="flex: 15 50%" maxlength="4000" oninput="notInvalid(this)" onkeypress="textAreaAdjust(this)" onkeyup="textAreaAdjust(this)"></textarea>
             </div>
             <div class="field-group" style="margin: 0em 0.5em 2em 0em; width: 24.1%; float: left;">
                 <span class="fa-solid fa-clock" aria-hidden="true" style="flex: 11%"></span>
@@ -106,7 +106,7 @@
             <p class="content-text" style="font-size: large;">Countries:</p>
             <div id="countries-form">
                 <div class="field-group">
-                    <input list="countries" class="text-field" placeholder="Add a country" oninput="notInvalid(this)" required>
+                    <input list="countries" class="text-field" placeholder="Add a country" oninput="notInvalid(this)" maxlength="64" required>
                     <button type="button" onclick="addCountry(this)" class="button-submit">Add</button>
                     <button type="button" onclick="removeCountry(this)" class="button-delete" style="display: none;">Remove</button>
                 </div>
@@ -127,13 +127,13 @@
             <div id="locations-form">
                 <div>
                     <div class="field-group" style="float: left; width: 40%; margin-right: 1em;">
-                        <input list="locations" class="text-field" placeholder="Add the location" oninput="notInvalid(this)" required>
+                        <input list="locations" class="text-field" placeholder="Add the location" oninput="notInvalid(this)" maxlength="128" required>
                     </div>
                     <div class="field-group" style="float: left; width: 28.5%; margin-right: 1em;">
-                        <input list="regions" class="text-field" placeholder="Add the region" oninput="notInvalid(this)" required>
+                        <input list="regions" class="text-field" placeholder="Add the region" oninput="notInvalid(this)" maxlength="64" required>
                     </div>
                     <div class="field-group" style="float: left; width: 28.5%;">
-                        <input list="countries" class="text-field" placeholder="Add the country" oninput="notInvalid(this)" required>
+                        <input list="countries" class="text-field" placeholder="Add the country" oninput="notInvalid(this)" maxlength="64" required>
                         <button type="button" onclick="addLocation(this)" class="button-submit">Add</button>
                         <button type="button" onclick="removeLocation(this)" class="button-delete" style="display: none;">Remove</button>
                     </div>
@@ -152,7 +152,7 @@
             </datalist>
             <div id="tags-form">
                 <div class="field-group">
-                    <input list="tags" class="text-field" placeholder="Add a tag" oninput="notInvalid(this)" required>
+                    <input list="tags" class="text-field" placeholder="Add a tag" oninput="notInvalid(this)" maxlength="64" required>
                     <button type="button" onclick="addTag(this)" class="button-submit">Add</button>
                     <button type="button" onclick="removeTag(this)" class="button-delete" style="display: none;">Remove</button>
                 </div>
@@ -160,9 +160,9 @@
                 <input type="text" hidden="true" id="tagInputs" name="tagInputs" value="">
             </div>
             <br>
-            <p class="content-text" style="text-align: center; font-size: larger;">Now to add some departure dates...</p>
+            <p class="content-text" style="text-align: center; font-size: larger;">Now to add some departure dates (ignore if it is free-and-easy)...</p>
             <div class="field-group">
-                <input id="dates" name="dates" form="form" type="text" class="text-field date" placeholder="Pick the multiple dates" oninput="notInvalid(this)">
+                <input id="dates" name="dates" form="form" type="text" class="text-field date" placeholder="Pick the multiple dates" oninput="notInvalid(this)" readonly>
             </div>
         </div>
         <br>

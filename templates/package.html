@@ -7,7 +7,7 @@
             VoyageVault | {{ package.pname }}
         </title>
 
-        <script src="{{ url_for('static',filename='scripts/package.js')}}"></script>
+        
     </head>
     <body class="page">
         <div class="package-box">
@@ -35,10 +35,16 @@
                 {% endif %}
                 <br>
                 <h3 class="content-text">Adult price: ${{ package.aprice }} <br> Child price: ${{ package.cprice }}</h3>
-                <h4 class="content-text">Offered by {{ package.aname }}</h4>
+                <h4 class="content-text">Offered by {{ package.aname }} ({{package.hotline}})</h4>
+                {% if package.tourtype == 'GRP' %}
+                    <h4 class="content-text">The maximum group size is {{ package.maxsize }}, click below to see the available dates</h4>
+                    <div class="field-group-long">
+                        <input id="dates" name="dates" type="text" class="text-field date" placeholder="Pick the multiple dates" oninput="notInvalid(this)" readonly value="ClickMe&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{date}}" style="border-color: black; width: 10%;">
+                    </div>
+                {% endif %}
                 <br>
             </div>
-            <button class="button-36" href="{{ package.link }}" style="width: 30%; margin: auto; display: block; text-transform: uppercase;">Sign up now!</button>
+            <a class="button-36" href="{{ package.link }}" style="width: 30%; margin: auto; display: block; text-transform: uppercase; text-align: center; padding: 20px 0;">Sign up now!</a>
             <div class="content-package">
                 <h2 class="content-text">Reviews</h2>
                 <p class="content-text">Purchased this package before? Leave a review to help others know more about it!</p>
@@ -101,6 +107,11 @@
                 {% endfor %}
             </div>
         </div>
+
+        <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+        <script src="{{ url_for('static',filename='scripts/package.js')}}"></script>
     </body>
 
 {% endblock %}

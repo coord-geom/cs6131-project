@@ -24,7 +24,7 @@
                 <div class="field-group-long">
                   <span class="fa fa-magnifying-glass" aria-hidden="true"></span>
                   <div class="text-field">
-                    <input name="query" id="query" type="text" value="{{ search }}" placeholder="Amsterdam">
+                    <input name="query" id="query" type="text" value="{{ search }}" placeholder="Bali">
                   </div>
                 </div>
               </div>
@@ -40,7 +40,7 @@
                 </div>
                 <div class="search-option">
                   <p style="color:aliceblue" id="cap-text"></p>
-                  <input type="range" id="cap" name="cap" min="1" max="30" step="1" value="{% if request.form['cap'] %}{{ request.form['cap']}}{% else %}1{% endif %}" oninput="changeCapacity(this)">
+                  <input type="range" id="cap" name="cap" min="1" max="{{ capacity }}" step="1" value="{% if request.form['cap'] %}{{ request.form['cap']}}{% else %}{{capacity}}{% endif %}" oninput="changeCapacity(this)">
                 </div>
                 <div class="search-option">
                   <p style="color:aliceblue" id="cost-text">Maximum Cost</p>
@@ -65,7 +65,6 @@
                   <div class="package-info">
                       <div class="package-agency">
                         {% if package.prating %}
-                          <!--{{ '%0.1f' | format(package.prating) }} stars-->
                           {% for i in range(package.prating|int) %} <i class="fa-solid fa-star"></i> {% endfor %}
                           {% for i in range(5-package.prating|int) %} <i class="fa-regular fa-star"></i> {% endfor %}
                         {% else %}

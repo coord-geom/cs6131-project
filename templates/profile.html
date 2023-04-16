@@ -27,7 +27,9 @@
             </table>
         </div>
         <h2 class="heading-center">Update my profile:</h2>
-        {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        
+        <div class="content" style="color:white">
+            {% with errors = get_flashed_messages(category_filter=["error"]) %}
                 {% if errors %}
                     {% for message in errors %}
                         <div class="alert alert-danger" role="alert">                
@@ -45,13 +47,12 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-        <div class="content" style="color:white">
-            <form action="{{ url_for('profile') }}" method="post" class="was-validated">
+            <form method="post" class="was-validated">
                 <div class="field-group">
                     <input type="text" class="text-field" name="email" placeholder="Email" id="email" value="{{ session['email'] }}" required>
                 </div>
                 <div class="field-group">
-                    <input type="number" class="text-field" name="hpnum" placeholder="Enter new contact number to update" id="hpnum" required>
+                    <input type="number" class="text-field" name="hpnum" placeholder="Enter new contact number to update" id="hpnum" value="{{ session['hpnum'] }}" required>
                 </div>
                 <div class="field-group">
                     <input type="password" class="text-field" name="password" placeholder="Enter new password to update" id="password" required>
